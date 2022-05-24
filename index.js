@@ -11,6 +11,10 @@ class GeneralStore {
     return (state = [], action) => {
       if (action.type === `LOAD_${slice}`) return action.payload;
       if (action.type === `POST_${slice}`) return [...state, action.payload];
+      if (action.type === `PUT_${slice}`)
+        return state.map((x) =>
+          x.id === action.payload.id ? action.payload : x
+        );
       return state;
     };
   };
@@ -38,9 +42,21 @@ class GeneralStore {
         method: 'post',
         url: `/api/${slice}`,
         baseURL: this.baseUrl,
-        data: data,
+        data,
       });
       dispatch({ type: `POST_${slice}`, payload: response.data });
+    };
+  };
+
+  genericPut = (slice, identifier, data) => {
+    return async (dispatch) => {
+      const response = await axios({
+        method: 'put',
+        url: `/api/${slice}`,
+        baseURL: this.baseUrl,
+        data: { identifier, data },
+      });
+      dispatch({ type: `PUT_${slice}`, payload: response.data });
     };
   };
 }
