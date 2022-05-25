@@ -52,13 +52,27 @@ class GeneralStore {
     return async (dispatch) => {
       const response = await axios({
         method: 'put',
+        //url needs to be dynamic
         url: `/api/${slice}`,
         baseURL: this.baseUrl,
+        //if no identifier, data.id
         data: { identifier, data },
       });
       dispatch({ type: `PUT_${slice}`, payload: response.data });
     };
   };
+
+  // genericDelete = (slice, identifier) => {
+  //   return async (dispatch) => {
+  //     const response = await axios({
+  //       method: 'delete',
+  //       url: `/api/${slice}`,
+  //       baseURL: this.baseUrl,
+  //       data: { identifier, data },
+  //     });
+  //     dispatch({ type: `PUT_${slice}`, payload: response.data });
+  //   };
+  // };
 }
 
 module.exports = GeneralStore;
