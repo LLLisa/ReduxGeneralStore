@@ -26,10 +26,10 @@ class GeneralStore {
     }, {});
   };
 
-  genericLoad = (slice) => {
+  genericLoad = (url, slice) => {
     return async (dispatch) => {
       const response = await axios({
-        url: `/api/${slice}`,
+        url: `${url}${slice}`,
         baseURL: this.baseUrl,
       });
       dispatch({ type: `LOAD_${slice}`, payload: response.data });
