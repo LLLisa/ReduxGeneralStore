@@ -1,0 +1,20 @@
+{
+  "name": "redux-general-store",
+  "version": "1.0.0",
+  "description": "A redux store alternative that generalizesand simplifies CRUD operations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["redux", "thunk","thunks", "store","redux store"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LLLisa/ReduxGeneralStore.git"
+  },
+  "author": "Lisa Knox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LLLisa/ReduxGeneralStore/issues"
+  },
+  "homepage": "https://github.com/LLLisa/ReduxGeneralStore#readme"
+}
