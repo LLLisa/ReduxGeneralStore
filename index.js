@@ -7,15 +7,15 @@ class GeneralStore {
     this.reducerBody = this.generateReducerBody(this.models);
   }
 
-  generateReducer = (slice) => {
+  generateReducer = (model) => {
     return (state = [], action) => {
-      if (action.type === `LOAD_${slice}`) return action.payload;
-      if (action.type === `POST_${slice}`) return [...state, action.payload];
-      if (action.type === `PUT_${slice}`)
+      if (action.type === `LOAD_${model}`) return action.payload;
+      if (action.type === `POST_${model}`) return [...state, action.payload];
+      if (action.type === `PUT_${model}`)
         return state.map((x) =>
           x.id === action.payload.id ? action.payload : x
         );
-      if (action.type === `DELETE_${slice}`)
+      if (action.type === `DELETE_${model}`)
         return state.filter((x) => x.id !== action.payload.id);
       return state;
     };
@@ -28,51 +28,52 @@ class GeneralStore {
     }, {});
   };
 
-  genericLoad = (url, slice) => {
+  genericLoad = (route, model) => {
     return async (dispatch) => {
       const response = await axios({
-        url: `${url}/${slice}`,
+        url: `${route}/${model}`,
         baseURL: this.baseUrl,
       });
-      dispatch({ type: `LOAD_${slice}`, payload: response.data });
+      dispatch({ type: `LOAD_${model}`, payload: response.data });
     };
   };
 
-  genericPost = (url, slice, data) => {
+  genericPost = (route, model, data) => {
     return async (dispatch) => {
       const response = await axios({
         method: 'post',
-        url: `${url}/${slice}`,
+        url: `${route}/${model}`,
         baseURL: this.baseUrl,
         data,
       });
-      dispatch({ type: `POST_${slice}`, payload: response.data });
+      dispatch({ type: `POST_${model}`, payload: response.data });
     };
   };
 
-  genericPut = (url, slice, data, identifier) => {
+  genericPut = (route, model, data, identifier) => {
     if (!identifier) identifier = { id: data.id };
     console.log(data, identifier);
     return async (dispatch) => {
       const response = await axios({
         method: 'put',
-        url: `${url}/${slice}`,
+        url: `${route}/${model}`,
         baseURL: this.baseUrl,
         data: { data, identifier },
       });
-      dispatch({ type: `PUT_${slice}`, payload: response.data });
+      dispatch({ type: `PUT_${model}`, payload: response.data });
     };
   };
 
-  genericDelete = (url, slice, identifier) => {
+  genericDelete = (route, model, identifier) => {
+    console.log(identifier);
     return async (dispatch) => {
       const response = await axios({
         method: 'delete',
-        url: `${url}/${slice}`,
+        url: `${route}/${model}`,
         baseURL: this.baseUrl,
         data: identifier,
       });
-      dispatch({ type: `DELETE_${slice}`, payload: response.data });
+      dispatch({ type: `DELETE_${model}`, payload: response.data });
     };
   };
 }
@@ -80,4 +81,3 @@ class GeneralStore {
 module.exports = GeneralStore;
 
 //should 'url' be 'route'?
-//slice => model
