@@ -119,12 +119,79 @@ There are 4 main methods on the GS object:
 
 - `GS.genericGet(route, model)`
 
-This method is intended to perform a findall() on a model (or table or slice),
-returning all rows from the specified table. These api route urls typically look
-something like `http://localhost:42069/api/users` and this is constructed when
-`genericGet` is called: The baseUrl is the same as the one passed in when the GS
-object is created, the route (`/api` in our example) and the model (`users`) are
-passed in when calling the method. The api route is constructed like
-`${this.baseUrl}${route}/${model}`. The 'model' argument is kept separate from
-the rest of the url here because it is also used to dispatch the result of the
-api call to the reducer for that model. Neat!
+This method is will attempt to use an HTTP GET route on a model (or table or
+slice), returning all rows from the specified table It expects to receive an
+array as a response.. These api route urls typically look something like this:
+
+    http://localhost:42069/api/users
+
+and this is constructed when `genericGet` is called: The baseUrl is the same as
+the one passed in when the GS object is created, the route (`/api` in our
+example) and the model (`users`) are passed in when calling the method. The api
+route is constructed like this:
+
+    ${this.baseUrl}${route}/${model}
+
+The model argument is kept separate from the rest of the url here because it is
+also used to dispatch the result of the api call to the reducer for that model.
+Neat!
+
+- `GS.genericPost(route, model, data)`
+
+This method will attempt to add a row (or instance) to a database table using an
+HTTP POST route and expects to receive the created item as a response. The route
+and model arguments are the same as in the previous method, and the data object
+here must be an object. It should look something like this:
+
+```
+  {
+    firstName: 'Homer',
+    lastName: 'Simpson',
+    email: 'chunkylover53@aol.com'
+  }
+```
+
+The data is intended to be inserted into the proper table (model) with the
+column names matching the keys on the data object. Server-side and database
+validation errors are not handled by The Redux General Store and should be
+processed separately.
+
+- `GS.genericPut(route, model, data, identifier(optional))
+
+This method will attempt to send an HTTP PUT request to the server with the
+intention of updating a particular row in a database and expects to receive the
+updated item as a response. The route and model arguments are the same as in the
+previous methods, but the data object only needs to contain the data to update
+on the intended row. The optional identifier argument is an object used to
+identify which row in the database to update. For example:
+
+```
+GS.genericPut(api, users, {jobTitle: Snow Plow Driver}, {firstName:Homer})
+```
+
+This will find the proper row by using the identifier object as a search
+parameter and update the information accordingly. An easier way to do this is to
+simply pass the entire updated data object like so:
+
+```
+GS.genericPut(api, users, updatedData)
+```
+
+or
+
+```
+GS.genericPut(api, users, { ...selectedUser, ...newInfo })
+```
+
+By default, if an identifier is not provided, the genericPut thunk will look on
+the data object for a property called 'id' and use that as an identifier.
+
+- GS.genericDelete(route, model, identifier)
+
+This one is just like it says on the tin. It will attempt to send an HTTP DELETE
+request to the provided url and expects to receive the deleted item as a
+response. The identifier argument must be an object in the form:
+
+    {id:4}
+
+..and that's it for the CRUD methods!
