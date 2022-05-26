@@ -15,6 +15,8 @@ class GeneralStore {
         return state.map((x) =>
           x.id === action.payload.id ? action.payload : x
         );
+      if (action.type === `DELETE_${slice}`)
+        return state.filter((x) => x.id !== action.payload.id);
       return state;
     };
   };
@@ -48,31 +50,34 @@ class GeneralStore {
     };
   };
 
-  genericPut = (slice, identifier, data) => {
+  genericPut = (url, slice, data, identifier) => {
+    if (!identifier) identifier = { id: data.id };
+    console.log(data, identifier);
     return async (dispatch) => {
       const response = await axios({
         method: 'put',
-        //url needs to be dynamic
-        url: `/api/${slice}`,
+        url: `${url}/${slice}`,
         baseURL: this.baseUrl,
-        //if no identifier, data.id
-        data: { identifier, data },
+        data: { data, identifier },
       });
       dispatch({ type: `PUT_${slice}`, payload: response.data });
     };
   };
 
-  // genericDelete = (slice, identifier) => {
-  //   return async (dispatch) => {
-  //     const response = await axios({
-  //       method: 'delete',
-  //       url: `/api/${slice}`,
-  //       baseURL: this.baseUrl,
-  //       data: { identifier, data },
-  //     });
-  //     dispatch({ type: `PUT_${slice}`, payload: response.data });
-  //   };
-  // };
+  genericDelete = (url, slice, identifier) => {
+    return async (dispatch) => {
+      const response = await axios({
+        method: 'delete',
+        url: `${url}/${slice}`,
+        baseURL: this.baseUrl,
+        identifier,
+      });
+      dispatch({ type: `POST_${slice}`, payload: response.data });
+    };
+  };
 }
 
 module.exports = GeneralStore;
+
+//should 'url' be 'route'?
+//slice => model
