@@ -6,7 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["redux", "thunk","thunks", "store","redux store"],
+  "keywords": [
+    "redux",
+    "thunk",
+    "thunks",
+    "store",
+    "redux store"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LLLisa/ReduxGeneralStore.git"
@@ -16,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/LLLisa/ReduxGeneralStore/issues"
   },
-  "homepage": "https://github.com/LLLisa/ReduxGeneralStore#readme"
+  "homepage": "https://github.com/LLLisa/ReduxGeneralStore#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
 }
