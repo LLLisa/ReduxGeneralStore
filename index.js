@@ -70,9 +70,9 @@ class GeneralStore {
         method: 'delete',
         url: `${url}/${slice}`,
         baseURL: this.baseUrl,
-        identifier,
+        data: identifier,
       });
-      dispatch({ type: `POST_${slice}`, payload: response.data });
+      dispatch({ type: `DELETE_${slice}`, payload: response.data });
     };
   };
 }
