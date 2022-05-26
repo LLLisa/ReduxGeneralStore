@@ -79,7 +79,7 @@ generateReducer = (model) => {
 
 ## The GS Object
 
-#### Properties
+### Properties
 
 This is the object returned when you create an instance of the GeneralStore
 class using the `new` keyword. It has three(3) properties:
@@ -113,4 +113,4 @@ const reducer = combineReducers({
 });
 ```
 
-#### Methods
+### Methods
