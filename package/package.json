@@ -1,7 +1,7 @@
 {
   "name": "redux-general-store",
   "version": "1.0.0",
-  "description": "A redux store alternative that generalizesand simplifies CRUD operations",
+  "description": "A redux store alternative that generalizes and simplifies CRUD operations",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
