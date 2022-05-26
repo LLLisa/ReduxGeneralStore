@@ -81,8 +81,8 @@ generateReducer = (model) => {
 
 ### Properties
 
-This is the object returned when you create an instance of the GeneralStore
-class using the `new` keyword. It has three(3) properties:
+The GS object is returned when you create an instance of the GeneralStore class
+using the `new` keyword. It has three(3) properties:
 
 - `GS.baseUrl`
 
@@ -109,8 +109,22 @@ spread operator like so:
 
 ```
 const reducer = combineReducers({
-  /**place non-generic reducers here */ ...GS.reducerBody,
+  /**place non-general reducers here */ ...GS.reducerBody,
 });
 ```
 
 ### Methods
+
+There are 4 main methods on the GS object:
+
+- `GS.genericGet(route, model)`
+
+This method is intended to perform a findall() on a model (or table or slice),
+returning all rows from the specified table. These api route urls typically look
+something like `http://localhost:42069/api/users` and this is constructed when
+`genericGet` is called: The baseUrl is the same as the one passed in when the GS
+object is created, the route (`/api` in our example) and the model (`users`) are
+passed in when calling the method. The api route is constructed like
+`${this.baseUrl}${route}/${model}`. The 'model' argument is kept separate from
+the rest of the url here because it is also used to dispatch the result of the
+api call to the reducer for that model. Neat!
