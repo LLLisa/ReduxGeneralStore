@@ -302,9 +302,9 @@ through the url, accessed via `req.params.model`. We are using a postgresql
 database here, which requires us to either only have table names with all
 lowercase letters _or_ account for this by surrounding those table names with
 quotes. We have also opted for a raw SQL query instead of using the sequelize
-`Model.findall()` method because in order to transmute the model names passed in
-into their singular, uppercased forms is harder than just using a regex test and
-a raw `db.query()`. This method follows the generic style of The Redux General
+`Model.findall()` method because transmuting the model names passed in into
+their singular, uppercased forms is harder than just using a regex test and a
+raw `db.query()`. This method follows the generic style of The Redux General
 Store, but it's veering sharply away from the RESTful API paradigm, which is not
 necessary to do at all.
 
