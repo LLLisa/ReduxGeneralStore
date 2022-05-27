@@ -1,13 +1,13 @@
 # Welcome to the Redux General Store!
 
-We all love redux, sure, but we all know it has one tiny flaw, which is the
+We all love redux, sure, but everyone knows it has one tiny flaw, which is the
 amount of boilerplate necessary to get the redux store up and running. Well no
 more!
 
 The Redux General Store generalizes thunks and reducers so that one set of
 thunks can serve any model, and reducers are generated for each model
-automatically. The trade-off is more opinionation: you must specify which model
-and route to use when calling the thunk.
+on-the-fly. The trade-off is more opinionation: you must specify which model and
+route to use when calling the thunk.
 
 For example:
 
@@ -22,14 +22,19 @@ guard against typo bugs. That turns it into:
 
     genericGet(api, users)
 
-Yes, I know, it is slightly more 'wordy' than the original line, but in exchange
-for typing few more characters, you get a redux store that handles basic CRUD
-operations, is about 10 lines long, and doesn't get larger with more models.
-Adding a new slice of data to your store is as easy as adding the name of the
-model to the 'models' array and that's it.
+See? It is slightly more 'wordy' than the original line, but in exchange for
+typing few more characters, you get a redux store that is about 10 lines of code
+and doesn't get larger with more models. Adding a new slice of data to your
+store is as easy as adding the name of the model to the 'models' array (or using
+the `generateReducer` function provided) and that's it.
 
-A small React application using The General General Store can be found here:
-https://github.com/LLLisa/RGSTest
+The General Store does not prevent you from adding thunks or reducers in the
+traditional way. You can even use the CRUD suite from the General Store and make
+a new reducer for that one thunk the General Store doesn't provide!
+
+A small React application using The General General Store (with a LOT of
+comments explaining its use) can be found here:
+https://github.com/LLLisa/RGSTest <--check out that redux store!
 
 !important: This is not intended as a complete replacement for all redux
 functionality. For instance, the thunks provided by the general store can only
@@ -37,44 +42,49 @@ GET all instances of a model. It does not GET all instances WHERE a condition is
 met (well, it can, but you probably shouldn't bother). Also, no consideration is
 given to security here. You are expected to take care of these sorts of
 situations in your REST API routes and/or by building your own thunks and
-reducers to cover them. The Redux General Store is intended for general,
-non-secure CRUD operations between your frontend and your API.
+reducers to cover them.
+
+The Redux General Store is intended for general, non-secure CRUD operations
+between your frontend and your API. It does not prevent you from adding thunks
+or reducers in the traditional way. You can even use the CRUD suite from the
+General Store and make a new reducer for that one thunk the General Store
+doesn't provide!
 
 So let's get started!
 
-## Getting Started
+# Getting Started
 
 First, do the old
 
     $ npm install redux-general-store --save-dev
 
-then
+Then, in your redux store/index file:
 
     import GeneralStore from 'redux-general-store'
 
 What you have just imported is the GeneralStore class. Create an instance of it
 and pass in the base URL of your API as the first argument, and an array
-containing the names of the models (or slices if you prefer) you will be using
-the general store for as the second argument. It will look something like this:
+containing the names of your data models as the second argument. It will look
+something like this:
 
     export const GS = new GeneralStore('http://localhost:42069', [ 'users', 'accounts', 'files', ]);
 
 You can put the export statement elsewhere if you wish. When the GS object is
-created, it will automatically construct a full CRUD reducer for each of the
-models passed in the second argument.
+created, it will automatically construct reducers for each of the models passed
+in the second argument.
 
-## The GS Object
+# The GS Object
 
-### Properties
+## Properties
 
 The GS object is returned when you create an instance of the GeneralStore class
-using the `new` keyword. It has three(3) properties:
+using the `new` keyword. It has three properties:
 
 - `GS.baseUrl`
 
 (String) This is the base url to your api. Something like
-`http://localhost:42069` or `www.fsf.org` or something. The actual api route
-will be appended to this url.
+`http://localhost:42069` or `www.fsf.org` or something. The rest of the api
+route (pun intended) will be appended to this url.
 
 - `GS.models`
 
@@ -99,24 +109,22 @@ const reducer = combineReducers({
 });
 ```
 
-The default state for all GS reducers is an empty array.
-
-### CRUD Methods
+## CRUD Methods
 
 There are 4 CRUD methods on the GS object:
 
 - `GS.genericGet(route, model)`
 
 This method is will attempt to use an HTTP GET route on a model (or table or
-slice), returning all rows from the specified table It expects to receive an
-array as a response.. These api route urls typically look something like this:
+slice), returning all rows from the specified table. It expects to receive an
+array as a response. Api route urls typically look something like this:
 
     http://localhost:42069/api/users
 
-and this is constructed when `genericGet` is called: The baseUrl is the same as
-the one passed in when the GS object is created, the route (`/api` in our
-example) and the model (`users`) are passed in when calling the method. The api
-route is constructed like this:
+This is what is constructed when `genericGet` is called: The baseUrl is the one
+passed in when the GS object is created, the api route (`/api`) and the model
+(`users`) are passed in when calling the method. The route is then constructed
+like this:
 
     ${this.baseUrl}${route}/${model}
 
@@ -139,27 +147,44 @@ here must be an object. It should look something like this:
   }
 ```
 
-The data is intended to be inserted into the proper table (model) with the
-column names matching the keys on the data object. Server-side and database
-validation errors are not handled by The Redux General Store and should be
-processed separately.
+The data is intended to be inserted into the proper table with the column names
+matching the keys on the data object. Server-side and database validation errors
+are not handled by The Redux General Store and should be processed separately.
 
-- GS.genericPut(route, model, data, identifier(optional))
+- `GS.genericPut(route, model, data, identifier(optional))`
 
 This method will attempt to send an HTTP PUT request to the server with the
 intention of updating a particular row in a database and expects to receive the
 updated item as a response. The route and model arguments are the same as in the
-previous methods, but the data object only needs to contain the data to update
-on the intended row. The optional identifier argument is an object used to
-identify which row in the database to update. For example:
+previous methods, but if the optional identifier argument is provided, the data
+object only needs to contain the data to update on the intended row. The
+identifier argument is an object used to identify which row in the database to
+update. For example:
 
 ```
-GS.genericPut(api, users, {jobTitle: Snow Plow Driver}, {firstName:Homer})
+GS.genericPut(api, users, { jobTitle: Snow Plow Driver }, { firstName:Homer })
 ```
 
-This will find the proper row by using the identifier object as a search
-parameter and update the information accordingly. An easier way to do this is to
-simply pass the entire updated data object like so:
+The api route handler should be configured find the proper row by using the
+identifier object as a search parameter and update the information accordingly,
+like this:
+
+```
+/*try-catch omitted for brevity*/
+
+app.put('/api/users', async (req, res, next) => {
+  const userToUpdate = await User.findAll({
+    where: {
+      firstName: req.body.identifier
+    }
+  })
+  const response = await userToUpdate.update(req.body.data)
+  res.send(response)
+}
+```
+
+However, an easier way to do this is to simply pass the entire updated data
+object like so:
 
 ```
 GS.genericPut(api, users, updatedData)
@@ -171,28 +196,36 @@ or
 GS.genericPut(api, users, { ...selectedUser, ...newInfo })
 ```
 
-By default, if an identifier is not provided, the genericPut thunk will look on
+If an identifier argument is not provided, the genericPut method will look on
 the data object for a property called 'id' and use that as an identifier. The
-`req.body` generated by this thunk will always be an object in the shape of
-`req.body: {data, identifier}`
+api route handler can use this to find the proper row using the id property as
+the primary key. The `req.body` generated by this method will always be an
+object in the shape of `req.body: {data, identifier}`
 
-- GS.genericDelete(route, model, identifier)
+- `GS.genericDelete(route, model, identifier)`
 
 This one is just like it says on the tin. It will attempt to send an HTTP DELETE
 request to the provided url and expects to receive the deleted item as a
-response. The identifier argument must be an object in the form:
+response. The identifier argument (usually the primary key) should be an object
+in this form:
 
-    {id:4}
+    { id:4 }
 
-..and that's it for the CRUD methods!
+or
 
-### Additional Methods
+    { lastName: 'Smithers' }
+
+If something other than the primary key is used as an identifier, make sure to
+reflect that in your api route handler.
+
+That's it for the CRUD methods!
+
+## Additional Methods
 
 There are two utility methods on the GS object. It is probably best to ignore
-them both, but I believe there are use cases in which one might wnat to use
-them.
+them both, but there may be use cases for them, so here ya go:
 
-- GS.generateReducer(model)
+- `GS.generateReducer(model)`
 
 This method returns a reducer function with Get, Post, Put, and Delete
 functionality for the specified model. It looks like this:
@@ -202,35 +235,37 @@ generateReducer = (model) => {
     return (state = [], action) => {
       if (action.type === `GET_${model}`) return action.payload;
       if (action.type === `POST_${model}`) return [...state, action.payload];
-      if (action.type === `PUT_${model}`)
-        return state.map((x) =>
-          x.id === action.payload.id ? action.payload : x
-        );
-      if (action.type === `DELETE_${model}`)
-        return state.filter((x) => x.id !== action.payload.id);
+      if (action.type === `PUT_${model}`) return state.map((x) => x.id === action.payload.id ? action.payload : x);
+      if (action.type === `DELETE_${model}`) return state.filter((x) => x.id !== action.payload.id);
       return state;
     };
   };
 
 ```
 
-Note that the action.types here don't follow the typical naming convention;
-instead of `GET_USERS` we use `GET_users`. This allows us to use the same
-variable to build the api url as we use to dispatch state changes. Pretty cool,
-huh?
+Note that the action types here don't quite follow the typical redux naming
+convention; instead of `GET_USERS` we have `GET_users`. This allows us to use
+the same variable to build the api url as we use to dispatch state changes.
+Pretty cool, huh?
 
 Also note that every generic reducer returns an empty array by default.
 
 This method will be useful if you want to generate a one-off generic reducer for
-a particular model. Just
+a particular model. Just:
 
     const stoneCutterReducer = GS.generateReducer(stoneCutters)
 
-...then add it to the `combineReducers` function provided by redux.
+Then add it to the `combineReducers` function provided by redux.
 
-    const reducer = combineReducers({stoneCutterReducer, ...GS.reducerBody})
+    const reducer = combineReducers({ stoneCutterReducer, ...GS.reducerBody })
 
-- GS.generateReducerBody(models)
+This is also where you would pass in a custom reducer built for a thunk not
+provided by the General Store. Say you want data in the form of a string or
+object in your redux store (remember, the General Store holds everything as
+arrays). Build your own reducer for that model and pass it into
+`combineReducers` like in the example above.
+
+- `GS.generateReducerBody(models)`
 
 This method is used when the GS object is created. It calls `generateReducer` on
 each model that was passed in when the GS object was created and returns an
@@ -238,6 +273,11 @@ object which is a collection of those reducers. It is typically passed into the
 redux `combineReducers` function like so:
 
     const reducer = combineReducers({ GS.reducerBody})
+
+That's the entire GS object, three properties and six methods. That's all it
+takes to build an entire redux store regardless of how many data models are
+required. However, the results you get using the General Store will largely
+depend on how your RESTful API is set up. To that end, here are some...
 
 ## Typical API Routes
 
@@ -257,16 +297,16 @@ app.get('/api/:model', async (req, res, next) => {
 });
 ```
 
-This route is used to retrieve data from tables whose names are passed in
-through `req.params.model`. We are accessing a postgresql database. This
-requires us to either only have table names with all lowercase letters _or_
-account for this by surrounding thos table names with quotes. We have also opted
-for a raw SQL query instead of using the sequelize `Model.findall()` method
-because in order to transmute the model names passed in into their singular,
-uppercased forms is harder than just using a regex test and a raw `db.query()`.
-This method follows the generic style of The Redux General Store, but it's
-veering sharply away from the RESTful API paradigm, which is not necessary to do
-at all.
+This route is used to retrieve data from any table whose name is passed in
+through the url, accessed via `req.params.model`. We are using a postgresql
+database here, which requires us to either only have table names with all
+lowercase letters _or_ account for this by surrounding thos table names with
+quotes. We have also opted for a raw SQL query instead of using the sequelize
+`Model.findall()` method because in order to transmute the model names passed in
+into their singular, uppercased forms is harder than just using a regex test and
+a raw `db.query()`. This method follows the generic style of The Redux General
+Store, but it's veering sharply away from the RESTful API paradigm, which is not
+necessary to do at all.
 
 You can (and probably should) write traditional RESTful API routes like this:
 
@@ -314,3 +354,29 @@ app.delete('/api/users', async (req, res, next) => {
 ```
 
 ## React Implementation
+
+In a react component, you won't be able to import your thunks individually
+because they are all on the GS object. So just import the GS object and access
+them from there!
+
+    import store, { GS } from '../store';
+
+Your mapDispatchToProps method will look only slightly different because of the
+extra arguments required:
+
+```
+const mapDispatchToProps = (dispatch) => {
+  return {
+    genericGet: (route, model) => dispatch(GS.genericGet(route, model)),
+    genericPost: (route, model, data) => dispatch(GS.genericPost(route, model, data)),
+    genericPut: (route, model, data, identifier) => dispatch(GS.genericPut(route, model, data, identifier)),
+    genericDelete: (route, model, identifier) => dispatch(GS.genericDelete(route, model, identifier)),
+  };
+};
+
+```
+
+At this point you are ready to use these methods in your react component. Stay
+tuned for demonstrations of other implementations!
+
+-LK

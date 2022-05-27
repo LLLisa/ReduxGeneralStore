@@ -1,6 +1,6 @@
 {
   "name": "redux-general-store",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A redux store alternative that generalizes and simplifies CRUD operations",
   "main": "index.js",
   "scripts": {
