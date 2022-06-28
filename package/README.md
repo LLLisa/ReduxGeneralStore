@@ -1,5 +1,7 @@
 # Welcome to the Redux General Store!
 
+A data-agnostic Redux store alternative that dramatically reduces boilerplate
+
 We all love redux, sure, but everyone knows it has one tiny flaw, which is the
 amount of boilerplate necessary to get the redux store up and running. Well no
 more!
@@ -187,13 +189,13 @@ However, an easier way to do this is to simply pass the entire updated data
 object like so:
 
 ```
-GS.genericPut(api, users, updatedData)
+GS.genericPut(api, users, updatedUser)
 ```
 
 or
 
 ```
-GS.genericPut(api, users, { ...selectedUser, ...newInfo })
+GS.genericPut(api, users, { ...selectedUser, ...updatedInfo })
 ```
 
 If an identifier argument is not provided, the genericPut method will look on
@@ -213,7 +215,7 @@ in this form:
 
 or
 
-    { lastName: 'Smithers' }
+    { lastName: 'Grimes' }
 
 If something other than the primary key is used as an identifier, make sure to
 reflect that in your api route handler.
@@ -361,7 +363,9 @@ them from there!
 
     import store, { GS } from '../store';
 
-Your mapDispatchToProps method will look only slightly different because of the
+Access them with `GS.genericGet()` or `GS.genericPut()` etc.
+
+If using class components, your mapDispatchToProps method will look only slightly different because of the
 extra arguments required:
 
 ```
@@ -375,6 +379,27 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 ```
+
+With React Hooks, several exciting new possibilities open up! For example, we eliminate the need for a `mapStateToProps` function. Instead, we use
+
+    const dispatch = useDispatch();
+
+and then call our GS methods with it:
+
+    dispatch(GS.genericGet(apiRoute, model))
+
+Note that when updating the redux store, we must use the `dispatch` method from the `useDispatch` hook rather than one returned by the `useReducer` hook. This is because `useReducer` only updates local state, not state in the Redux store. You can still use the `GS.generateReducer` with `useReducer` though! Just remember that the type names are generated from the string passed into the `GS.generateReducer` function:
+
+```
+const [names, dispatch] = useReducer(GS.generateReducer('names'), [
+    'Bart',
+    'Lisa',
+  ]);
+
+dispatch({ type: 'POST_names', payload: 'Maggie' });
+```
+
+Note the action type: `POST_names`. As long as the naming convention is followed, it will work just fine!
 
 At this point you are ready to use these methods in your react component. Stay
 tuned for demonstrations of other implementations!

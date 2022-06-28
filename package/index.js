@@ -52,7 +52,6 @@ class GeneralStore {
 
   genericPut = (route, model, data, identifier) => {
     if (!identifier) identifier = { id: data.id };
-    console.log(data, identifier);
     return async (dispatch) => {
       const response = await axios({
         method: 'put',
@@ -78,4 +77,4 @@ class GeneralStore {
 }
 
 // module.exports = GeneralStore;
-export default GeneralStore
+export default GeneralStore;
